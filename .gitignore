@@ -143,3 +143,6 @@ vignettes/*.pdf
 
 data.txt
 data_ft.txt
+data_ft_test.txt
+data_lstm.txt
+model.bin
