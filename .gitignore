@@ -140,3 +140,9 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+data.txt
+data_ft.txt
+data_ft_test.txt
+data_lstm.txt
+model.bin
