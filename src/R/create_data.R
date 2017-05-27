@@ -2,7 +2,7 @@ library(dplyr)
 
 create_data_num <- 1000
 time_range <- 300
-anomaly_num <- 100
+anomaly_num <- 10
 period_num <- 6
 
 # Creat Data
@@ -25,11 +25,15 @@ for(i in 1:anomaly_num){
 }
 
 # OutPut
-out <- file("./data.txt", "w")
+#out <- file("./data.txt", "w")
+out <- file("./data_ft.txt", "w")
 for(i in 1:create_data_num) {
+  if(i <= anomaly_num) writeLines(text = sprintf("__label__1"), con = out, sep=",")
+  else writeLines(text = sprintf("__label__2"), con = out, sep=",")
   for(j in 1:time_range){
     if(j == time_range) writeLines(text = sprintf(toString(df[,i][j])), con = out, sep="\n")
-    else writeLines(text = sprintf(toString(df[,i][j])), out, sep=",")
+    #else writeLines(text = sprintf(toString(df[,i][j])), out, sep=",")
+    else writeLines(text = sprintf(toString(df[,i][j])), out, sep=" ")
   }
 }
 close(out)
