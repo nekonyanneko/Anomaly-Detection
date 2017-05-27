@@ -77,10 +77,10 @@ for index,line in enumerate(lines2):
 print 'NP:\t\t', count1
 print 'TP:\t\t', count2
 print 'All:\t\t', all_count
-print 'recall:\t\t', (float)(count1)/(float)(100)
-print 'precision:\t', (float)(count1)/(float)(count1+(9900-count2))
-print 'accuray:\t',(float)(count1+count2)/(float)(all_count)
-print ''
 print 'recall:\t\t', (float)(count2)/(float)(9900)
 print 'precision:\t', (float)(count2)/(float)(count2+(100-count1))
+print 'accuray:\t',(float)(count1+count2)/(float)(all_count)
+print ''
+print 'recall:\t\t', (float)(count1)/(float)(100)
+print 'precision:\t', (float)(count1)/(float)(count1+(9900-count2))
 print 'accuray:\t',(float)(count1+count2)/(float)(all_count)
