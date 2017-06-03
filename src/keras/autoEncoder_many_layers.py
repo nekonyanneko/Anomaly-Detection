@@ -27,8 +27,8 @@ y_train = train_data[:,length_of_sequences:length_of_sequences+in_out_neurons]
 X_test = test_data[:,0:length_of_sequences]
 y_test = test_data[:,length_of_sequences:length_of_sequences+in_out_neurons]
 
-X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
-X_test  = np.reshape(X_test,  (X_test.shape[0], X_test.shape[1], 1))
+#X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+#X_test  = np.reshape(X_test,  (X_test.shape[0], X_test.shape[1], 1))
 
 print X_train.shape
 print y_train.shape
@@ -44,33 +44,26 @@ from keras.models import load_model
 #WHICH = 'TRAIN'
 WHICH = 'LOAD'
 batch_num = 10
-epoch = 50
-hidden_neurons = 300 # 中間層の数
+epoch = 500
+encoding_dim = 128
 model = None
 
 if 'TRAIN' == WHICH:
     model = Sequential()
-    model.add(LSTM(hidden_neurons, batch_input_shape=(None, length_of_sequences, 1), return_sequences=True))
-    #model.add(Dropout(0.5))
-    #model.add(Dense(hidden_neurons))
-    #model.add(Dropout(0.2))
-    model.add(LSTM(hidden_neurons/2, input_shape=(hidden_neurons/2, 1), return_sequences=True))
-    #model.add(Dropout(0.5))
-    #model.add(Dense(hidden_neurons/2))
-    #model.add(Dropout(0.2))
-    model.add(LSTM(hidden_neurons/2, input_shape=(hidden_neurons/2, 1), return_sequences=False))
-    #model.add(Dropout(0.5))
-    model.add(Dense(in_out_neurons))
-    #model.add(Dropout(0.2))
-    model.add(Activation("linear"))
+    model.add(Dense(encoding_dim, batch_input_shape = (None, length_of_sequences), activation='relu'))
+    model.add(Dense(length_of_sequences, activation = 'linear'))
+    model.add(Dense(length_of_sequences/2, activation = 'linear'))
+    model.add(Dense(length_of_sequences/4, activation = 'linear'))
+    model.add(Dense(length_of_sequences/2, activation = 'linear'))
+    model.add(Dense(length_of_sequences, activation = 'linear'))
     model.compile(loss="mean_squared_error", optimizer="rmsprop")
     early_stopping = EarlyStopping(monitor='val_loss', patience=0, verbose=0, mode='auto')
     #model.fit(X_train, y_train, batch_size=batch_num, nb_epoch=epoch, validation_split=0.02, callbacks=[early_stopping])
     model.fit(X_train, y_train, batch_size=batch_num, nb_epoch=epoch, validation_split=0.1)
     model.summary()
-    model.save("model.h5")
+    model.save("model_auto_many.h5")
 else:
-    model = load_model('model.h5')
+    model = load_model('model_auto_many.h5')
 
 # X_testを入力に次の１つの要素を推測
 limit = 0.95
@@ -82,6 +75,10 @@ tp_count = 0
 
 import scipy.spatial.distance
 predicted = model.predict(X_test)
+
+#print len(predicted[50]), predicted[50]
+#print len(y_test[50]), (y_test[50])
+
 for index in range(0,predicted.shape[0]):
     #print predicted[0]
     #print y_test[0]
@@ -92,15 +89,15 @@ for index in range(0,predicted.shape[0]):
             print 1 - scipy.spatial.distance.cosine(predicted[index],y_test[index]) , 'TN'
             tn_count = tn_count + 1
         else:
-            print 1 - scipy.spatial.distance.cosine(predicted[index],y_test[index]) , 'FP'
-            fp_count = fp_count + 1
+            print 1 - scipy.spatial.distance.cosine(predicted[index],y_test[index]) , 'FN'
+            fn_count = fn_count + 1
     else:
         if limit <= 1 - scipy.spatial.distance.cosine(predicted[index],y_test[index]):
             print 1 - scipy.spatial.distance.cosine(predicted[index],y_test[index]) , 'TP'
             tp_count = tp_count + 1
         else:
-            print 1 - scipy.spatial.distance.cosine(predicted[index],y_test[index]) , 'FN'
-            fn_count = fn_count + 1
+            print 1 - scipy.spatial.distance.cosine(predicted[index],y_test[index]) , 'FP'
+            fp_count = fp_count + 1
 
 print 'TP:', tp_count
 print 'FP:', fp_count
