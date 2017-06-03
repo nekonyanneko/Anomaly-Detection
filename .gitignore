@@ -146,5 +146,5 @@ data_ft.txt
 data_ft_test.txt
 data_lstm.txt
 data_lstm_test.txt
-model.bin
+*.bin
 *.h5
